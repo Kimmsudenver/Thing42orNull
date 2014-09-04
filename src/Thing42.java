@@ -201,13 +201,71 @@ public class Thing42<K, D> implements Thing42orNull<K, D> {
 			return false;
 		}
 		Thing42<K, D> thing = (Thing42<K, D>) o;
-		// perform == check first, if referencing same object, faster test
-		// if not, check that both are not null, and equal
-		// o.equals(null) will return false
-		return (KEY == thing.getKey() || KEY != null && KEY.equals(thing.getKey()))
-				&& (data == thing.getData() || data != null && data.equals(thing.getData()))
-				&& LEVEL == thing.getLevel();
+		
+		// If the sizes of either pool or peers differs, return false to avoid iteration
+				if (thing.getPeersAsCollection().size() != this.getPeersAsCollection().size()
+								|| thing.getPoolAsList().size() != this.getPoolAsList().size())
+					return false;
+				
+				// If the sizes are the same, then we need to iterate over them to ensure equality
+				else {
+					
+					// Iterate over each Thing42 in the pool of compared Thing42s to ensure equality of the pool
+					// If a Thing42 pool does not match the compared Thing42s pool, return false.
+					for (int i=0; i<this.getPoolAsList().size(); i++) {
+						if (thing.getPoolAsList().get(i) != this.getPoolAsList().get(i))
+							return false;
+					}
+					
+					// Check if the peers of this and thing are equal if thing.peers contains all Thing42 in 
+					//this.peers and vice versa
+					if(!this.peersEqual(thing)) return false;				
+						
+					
+					
+					// Lastly if peers/pool of compared Thing42s are identical,
+					// perform == check first, if referencing same object, faster test
+					// if not, check that both are not null, and equal
+					// o.equals(null) will return false
+					return (KEY == thing.getKey() || KEY != null && KEY.equals(thing.getKey()))
+								&& (data == thing.getData() || data != null && data.equals(thing.getData())
+								&& LEVEL == thing.getLevel());
+				}
+		 	
 	}
+	/**
+	 * Check if the peers contain this Thing42 object
+	 * @param o
+	 * @return boolean true if equal, false if otherwise
+	 */
+	
+	public boolean containPeer(Thing42<K,D> o){
+		Collection<Thing42orNull<K,D>> collection=this.getPeersAsCollection();
+		Iterator<Thing42orNull<K,D>> iterator=collection.iterator();
+		while(iterator.hasNext()){
+			Thing42<K,D> item=(Thing42<K,D>)iterator.next();
+			if(item==o) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if this and parameter Thing42 has the equal peers
+	 * @param thing
+	 * @return boolean true if equal, false otherwise
+	 */
+	public boolean peersEqual(Thing42<K,D> thing){
+		Collection<Thing42orNull<K,D>> thisCollection=this.getPeersAsCollection();
+		Collection<Thing42orNull<K,D>> thingCollection=thing.getPeersAsCollection();
+		for(Thing42orNull<K,D> item: thisCollection){
+			if(!thing.containPeer((Thing42<K,D>)item)) return false;
+		}
+		for(Thing42orNull<K,D> item: thingCollection){
+			if(!this.containPeer((Thing42<K,D>) item) )return false;
+		}
+		return true;
+	}
+	
 	
 	/**
 	 * Compute this Thing42's hashcode.
@@ -225,4 +283,5 @@ public class Thing42<K, D> implements Thing42orNull<K, D> {
 		result = prime * result + ((l == null) ? 0 : l.hashCode());
 		return result;
 	}
+	
 }
