@@ -57,7 +57,7 @@ public class Thing42<K, D> implements Thing42orNull<K, D> {
         {
             peers.put(k, new ArrayList<Thing42orNull<K, D>>());
         }
-        if(!peers.get(k).contains(newPeer))
+       // if(!peers.get(k).contains(newPeer))
         	peers.get(k).add(newPeer); 
     }
     /**
@@ -71,7 +71,7 @@ public class Thing42<K, D> implements Thing42orNull<K, D> {
         if(newMember == null) {
             throw new NullPointerException();
         }
-        if(!pool.contains(newMember))
+      //  if(!pool.contains(newMember))
         	pool.add(newMember); 
     }
     /**
